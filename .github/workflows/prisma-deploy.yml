@@ -15,8 +15,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
       - name: Apply all pending migrations to the database
-        run: pnpx prisma migrate deploy
+        run: npx prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
