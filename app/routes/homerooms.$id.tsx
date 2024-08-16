@@ -18,7 +18,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   interface Student {
     firstName: string;
     lastName: string;
-    spaceNumber: number;
+    spaceNumber: number | null;
     status: Status;
   }
 
@@ -26,7 +26,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
   for (let student of students) {
     let spaceStatus = await prisma.space.findUnique({
-      where: { id: student.spaceNumber },
+      where: { spaceNumber: student.spaceNumber ?? 0 },
       select: { status: true }
     });
     let currentStudent = {
@@ -58,9 +58,7 @@ export default function StudentList() {
               "h-28 p-2 border border-white text-center " +
               (student.status === Status.ACTIVE
                 ? "bg-green-700"
-                : student.status === Status.TIMEOUT
-                  ? "bg-green-200 text-black"
-                  : "bg-gray-700")
+                : "bg-gray-700")
             }
           >
             <div className="text-lg">

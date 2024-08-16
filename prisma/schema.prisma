@@ -29,8 +29,6 @@ model Student {
   spaceNumber Int?
   teacher     Teacher? @relation(fields: [homeRoom], references: [homeRoom])
   homeRoom    String?
-
-  // @@unique([homeRoom, firstName, lastName, spaceNumber])
 }
 
 model Space {
@@ -43,6 +41,5 @@ model Space {
 
 enum Status {
   ACTIVE
-  TIMEOUT
   EMPTY
 }

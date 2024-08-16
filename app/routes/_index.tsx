@@ -76,6 +76,7 @@ export default function () {
   });
 
   const updateUrl = (key: SharedSelection) => {
+    // @ts-ignore
     const rooms = Array.from(key.keys()).join(",");
     setSearchParams((prev) => {
       rooms === "" ? prev.delete("room") : prev.set("room", rooms);
@@ -184,9 +185,7 @@ function ParkingTile({ space }: { space: Space }) {
     "border-1 border-black flex items-center justify-center drop-shadow-sm";
 
   return data?.permitted ? (
-    newStatus === Status.TIMEOUT ? (
-      <div className={`${color} ${commonClasses}`}>{spaceNumber}</div>
-    ) : newStatus === Status.EMPTY ? (
+    newStatus === Status.EMPTY ? (
       <div
         className={`${color} ${commonClasses}`}
         onClick={() => updateToActive(spaceNumber)}
