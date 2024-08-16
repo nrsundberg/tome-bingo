@@ -6,7 +6,7 @@ import {
 } from "@nextui-org/react";
 import { Student } from "@prisma/client";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { redirect, useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { prisma } from "~/db.server";
 import { protectToAdminAndGetPermissions } from "~/sessions.server";
@@ -23,8 +23,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   console.log(formData);
   // Extract individual fields from formData
-  const firstName = formData.get("firstName") as string;
-  const lastName = formData.get("lastName") as string;
   const numStudents = parseInt(formData.get("numStudents") as string);
   const homeRoom = formData.get("homeRoom") as string;
 
@@ -38,7 +36,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const firstName = formData.get(`student_${i}`) as string;
   }
   // Return a response
-  return { success: true };
+  return redirect("/admin");
 }
 
 export default function TeacherForm() {
@@ -50,10 +48,6 @@ export default function TeacherForm() {
   return (
     <fetcher.Form className="max-w-[51vw] mx-auto" method="post">
       <h1 className="text-xl pb-5">Teacher</h1>
-      <div className="flex pb-5 gap-1">
-        <Input name={"firstName"} label="Teacher first name" />
-        <Input name={"lastName"} label="Teacher last Name" />
-      </div>
       <Input name={"homeRoom"} label="Teacher homeroom" />
       <h1 className="text-large pb-5">Students</h1>
       <div className="pb-4">
