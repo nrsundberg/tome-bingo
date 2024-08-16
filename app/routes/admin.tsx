@@ -11,7 +11,6 @@ import {
   Button,
   Divider,
   getKeyValue,
-  Input,
   Table,
   TableBody,
   TableCell,
@@ -121,16 +120,17 @@ export default function () {
             )}
           </div>
         </Form>
+        <Divider className={"my-3"} />
         <div className="flex gap-2 justify-center">
           <Link to="/create/homeroom">
-            <Button color="primary" name="action">
+            <Button color="secondary" name="action">
               Add Homeroom
             </Button>
           </Link>
 
           <Link to={`/create/student`}>
             <Button
-              color="primary"
+              color="secondary"
               type="submit"
               className="max-w-xs"
               value="create"
@@ -160,6 +160,7 @@ export default function () {
               className="max-w-xs"
               value="create"
               name="action"
+              disabled={value === ""}
             >
               Edit Student
             </Button>
@@ -168,7 +169,7 @@ export default function () {
         <div className="flex gap-2 py-4 justify-center">
           <Autocomplete
             defaultItems={homeRoom}
-            label="Search student by Space Num"
+            label="Search home room"
             className="max-w-xs"
             onInputChange={onInputChange}
           >
@@ -185,6 +186,7 @@ export default function () {
               className="max-w-xs"
               value="create"
               name="action"
+              disabled={value === ""}
             >
               Edit Homeroom
             </Button>

@@ -1,13 +1,10 @@
 import { Button, Input } from "@nextui-org/react";
-import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  redirect
-} from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
+import { redirectWithSuccess } from "remix-toast";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(params.value, "is bad");
@@ -31,7 +28,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const spaceNumber = parseInt(formData.get("spaceNumber") as string);
   const homeRoom = formData.get("homeRoom") as string;
   const id = formData.get("id") as string;
-  console.log(firstName, lastName);
   let student = await prisma.student.update({
     where: {
       id: parseInt(id)
@@ -44,8 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
       homeRoom: homeRoom
     }
   });
-
-  return redirect("/admin");
+  return redirectWithSuccess("/admin", { message: "Updated student info" });
 }
 export default function EditStudent() {
   const data = useLoaderData<typeof loader>() as any;

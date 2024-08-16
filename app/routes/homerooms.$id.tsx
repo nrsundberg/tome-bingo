@@ -44,10 +44,6 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 export default function StudentList() {
   const students = useLoaderData<typeof loader>();
 
-  for (let student of students) {
-    console.log(student.status);
-  }
-
   return (
     <div>
       <div className="text-xl">{}</div>

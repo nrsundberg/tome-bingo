@@ -4,7 +4,6 @@ import {
   Button,
   Input
 } from "@nextui-org/react";
-import { Student } from "@prisma/client";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
@@ -21,7 +20,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  console.log(formData);
   // Extract individual fields from formData
   const numStudents = parseInt(formData.get("numStudents") as string);
   const homeRoom = formData.get("homeRoom") as string;

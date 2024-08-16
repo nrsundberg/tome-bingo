@@ -4,16 +4,13 @@ import {
   Button,
   Input
 } from "@nextui-org/react";
-import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  redirect
-} from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
 import { Trash2Icon } from "lucide-react";
+import { jsonWithSuccess, redirectWithSuccess } from "remix-toast";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(params.value, "params undefined");
@@ -51,7 +48,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const homeRoom = formData.get("homeRoom") as string;
   const remove = formData.get("delete") as string;
   const id = formData.get("id") as string;
-
+  const action = formData.get("action");
   if (remove) {
     await prisma.student.delete({
       where: {
@@ -82,10 +79,12 @@ export async function action({ request }: ActionFunctionArgs) {
         }
       });
     }
-    return redirect("/admin");
   }
 
-  return { success: true };
+  if (action) {
+    return redirectWithSuccess("/admin", { message: "Updated homeroom" });
+  }
+  return jsonWithSuccess("Updated homeroom", { message: "Updated homeroom" });
 }
 
 export default function TeacherForm() {
@@ -100,6 +99,7 @@ export default function TeacherForm() {
       <h1 className="text-xl pb-5">Teacher</h1>
       <input hidden={true} name="id" value={data.homeRoom.id}></input>
       <Input
+        disabled
         name={"homeRoom"}
         label="Teacher homeroom"
         value={homeRoom}
@@ -166,7 +166,13 @@ export default function TeacherForm() {
       <input hidden={true} name="numStudents" value={numAddedStudent}></input>
 
       <div className="pt-10">
-        <Button isDisabled={false} type="submit" color="secondary">
+        <Button
+          isDisabled={false}
+          type="submit"
+          color="secondary"
+          name="action"
+          value="done"
+        >
           Done Editing
         </Button>
       </div>

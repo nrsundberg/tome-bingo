@@ -3,7 +3,6 @@ import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useState } from "react";
 import { prisma } from "~/db.server";
-import { protectToAdminAndGetPermissions } from "~/sessions.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   return {
@@ -15,7 +14,7 @@ export async function action({ request }: ActionFunctionArgs) {
   // Extract individual fields from formData
 
   const spaceNum = formData.get("spaceNum") as string;
-  const homeRoom = formData.get("homeRoom");
+  const homeRoom = formData.get("homeRoom") as string;
   const firstName = formData.get(`studentFirstName_`) as string;
   const lastName = formData.get(`studentLastName_`) as string;
 
@@ -34,7 +33,6 @@ export async function action({ request }: ActionFunctionArgs) {
     }
   });
 
-  console.log("student created", student);
   // Return a response
   return { success: true };
 }
