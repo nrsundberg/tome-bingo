@@ -1,0 +1,17 @@
+services:
+  mysql-db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: tome
+      MYSQL_DATABASE: tome
+      MYSQL_USER: tome
+      MYSQL_PASSWORD: tome
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+
+volumes: 
+  mysql-data:

@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      Int    @id @default(autoincrement())
+  kindeId String @unique
+}
+
+model Teacher {
+  id       Int       @id @default(autoincrement())
+  homeRoom String    @unique
+  students Student[]
+}
+
+model Student {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  space       Space?   @relation(fields: [spaceNumber], references: [spaceNumber])
+  spaceNumber Int?
+  teacher     Teacher? @relation(fields: [homeRoom], references: [homeRoom])
+  homeRoom    String?
+
+  // @@unique([homeRoom, firstName, lastName, spaceNumber])
+}
+
+model Space {
+  id          Int       @id @default(autoincrement())
+  spaceNumber Int       @unique
+  students    Student[]
+  status      Status    @default(EMPTY)
+  timestamp   String?
+}
+
+enum Status {
+  ACTIVE
+  TIMEOUT
+  EMPTY
+}
