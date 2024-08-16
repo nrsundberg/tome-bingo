@@ -14,12 +14,6 @@ export default function () {
       <div className="inline-flex gap-2  absolute right-2">
         <Link
           className="border-1 border-black p-1 rounded-lg text-black"
-          to="/homerooms"
-        >
-          Homerooms
-        </Link>
-        <Link
-          className="border-1 border-black p-1 rounded-lg text-black"
           to="/admin"
         >
           Admin
