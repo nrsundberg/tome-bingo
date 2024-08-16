@@ -93,23 +93,47 @@ export default function () {
   const deleteStudents = () => {
     deleteFetcher.submit({ action: "delete" }, { method: "post" });
   };
+  const onInputChange = (value: string) => {
+    setValue(value);
+  };
 
   return (
     <Page>
-      <Form method="post">
-        <div className="grid auto-rows-auto gap-3 py-4 justify-center">
-          {user.permissions.includes("clearAndSelect") && (
-            <Button
-              color="warning"
-              className="max-w-xs"
-              type="submit"
-              value="clear"
-              name="action"
-            >
-              Clear Grid
+      <div>
+        <Form method="post">
+          <div className="flex auto-rows-auto gap-3 py-4 justify-center">
+            {user.permissions.includes("create") && (
+              <Button
+                color="primary"
+                type="submit"
+                className="max-w-xs"
+                value="create"
+                name="action"
+              >
+                Create Grid
+              </Button>
+            )}
+            {user.permissions.includes("clearAndSelect") && (
+              <Button
+                color="warning"
+                className="max-w-xs"
+                type="submit"
+                value="clear"
+                name="action"
+              >
+                Clear Grid
+              </Button>
+            )}
+          </div>
+        </Form>
+        <div className="flex gap-2 justify-center">
+          <Link to="/create/teacher">
+            <Button color="primary" name="action">
+              Add Homeroom
             </Button>
-          )}
-          {user.permissions.includes("create") && (
+          </Link>
+
+          <Link to={`/create/student`}>
             <Button
               color="primary"
               type="submit"
@@ -117,35 +141,26 @@ export default function () {
               value="create"
               name="action"
             >
-              Create Grid
+              Add Student
             </Button>
-          )}
+          </Link>
         </div>
-      </Form>
-      <div className="grid auto-rows-auto gap-3 py-4 justify-center">
-        <Link to="./create/teacher">
-          <Button color="primary" name="action">
-            Add Teacher
-          </Button>
-        </Link>
-        <div className="flex">
+        <div className="flex gap-2 py-4 justify-center">
           <Autocomplete
             defaultItems={data}
-            label="Search student"
+            label="Search student by Space Num"
             className="max-w-xs"
+            onInputChange={onInputChange}
           >
             {(student) => (
-              <AutocompleteItem
-                key={student.firstName}
-                value={student.firstName}
-              >
-                {student.firstName}
+              <AutocompleteItem key={student.id} value={student.id}>
+                {`${student.firstName}-${student.spaceNumber}`}
               </AutocompleteItem>
             )}
           </Autocomplete>
-          <Link to={`./edit/student/${value}`}>
+          <Link to={`/edit/student/${value}`}>
             <Button
-              color="primary"
+              color="warning"
               type="submit"
               className="max-w-xs"
               value="create"
@@ -155,94 +170,55 @@ export default function () {
             </Button>
           </Link>
         </div>
-      </div>
-      <Outlet></Outlet>
-      <Divider className="my-3" />
-      <FamilyForm />
-      <Divider className="my-3" />
-      <div className="flex justify-around">
-        <fetcher.Form
-          encType="multipart/form-data"
-          action="/data/students"
-          method="post"
-        >
-          <MinimalCsvFileChooser file={file} setFile={setFile} />
-          <Button
-            type="submit"
-            color="primary"
-            isLoading={fetcher.state !== "idle"}
-            isDisabled={file === null}
-            className="mt-2"
+
+        <Divider className="my-3" />
+        <div className="flex justify-around">
+          <fetcher.Form
+            encType="multipart/form-data"
+            action="/data/students"
+            method="post"
           >
-            Create Records
+            <MinimalCsvFileChooser file={file} setFile={setFile} />
+            <Button
+              type="submit"
+              color="primary"
+              isLoading={fetcher.state !== "idle"}
+              isDisabled={file === null}
+              className="mt-2"
+            >
+              Create Records
+            </Button>
+          </fetcher.Form>
+          <Button
+            color="danger"
+            onClick={deleteStudents}
+            isLoading={deleteFetcher.state !== "idle"}
+            isDisabled={fetcher.state !== "idle" || data.length === 0}
+          >
+            Delete All Student Records
           </Button>
-        </fetcher.Form>
-        <Button
-          color="danger"
-          onClick={deleteStudents}
-          isLoading={deleteFetcher.state !== "idle"}
-          isDisabled={fetcher.state !== "idle" || data.length === 0}
-        >
-          Delete All Student Records
-        </Button>
-      </div>
-      <Divider className="my-3" />
-      <div className="px-[10vw] h-[300px] overflow-auto">
-        <Table removeWrapper isCompact isHeaderSticky>
-          <TableHeader columns={studentTableColumns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.label}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={data}>
-            {(item) => (
-              <TableRow key={item.id}>
-                {(columnKey) => (
-                  <TableCell>{getKeyValue(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        </div>
+        <Divider className="my-3" />
+        <div className="px-[10vw] h-[300px] overflow-auto">
+          <Table removeWrapper isCompact isHeaderSticky>
+            <TableHeader columns={studentTableColumns}>
+              {(column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              )}
+            </TableHeader>
+            <TableBody items={data}>
+              {(item) => (
+                <TableRow key={item.id}>
+                  {(columnKey) => (
+                    <TableCell>{getKeyValue(item, columnKey)}</TableCell>
+                  )}
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </Page>
-  );
-}
-
-export function FamilyForm() {
-  const fetcher = useFetcher();
-  const [familyName, setfamilyName] = useState("");
-  const [numStudents, setNumStudents] = useState("");
-  const [students, setStudents] = useState([]);
-
-  return (
-    <fetcher.Form method="post" action="./create/student" className="px-[10vw]">
-      <div className="flex gap-2">
-        <Input name={"studentFirstName_"} label="Student first name" />
-        <Input name={"studentLastName_"} label="Student last Name" />
-      </div>
-      <div className="flex gap-2">
-        <Input
-          className="py-1"
-          type="number"
-          name="spaceNum"
-          id="spaceNum"
-          label="Parking Number"
-        />
-        <Input
-          id="numStudents"
-          name="homeRoom"
-          label="Homeroom Number"
-          value={numStudents}
-          onValueChange={setNumStudents}
-        />
-      </div>
-      <div>
-        <Button type="submit" color="primary">
-          Add Student
-        </Button>
-      </div>
-    </fetcher.Form>
   );
 }
 
