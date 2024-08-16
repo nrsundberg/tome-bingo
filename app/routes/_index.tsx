@@ -69,6 +69,7 @@ export const useRevalidateOnInterval = ({
 export default function () {
   const [searchParams, setSearchParams] = useSearchParams();
   const { spaces, homeRooms, recentCars } = useLoaderData<typeof loader>();
+  const data = useRouteLoaderData<typeof rootLoader>("root");
 
   useRevalidateOnInterval({
     enabled: true,
@@ -86,41 +87,53 @@ export default function () {
   return (
     <Page>
       <div className="flex justify-center">
-        <div className="grid grid-rows-20 h-[80vh] w-5/6 font-extrabold text-large text-center">
-          <ParkingRows data={spaces} />
-        </div>
-        <Select
-          label="Filter Homeroom"
-          placeholder="Select Homeroom(s)"
-          className="max-w-xs px-4 pt-4"
-          variant="bordered"
-          selectionMode="multiple"
-          onSelectionChange={updateUrl}
+        <div
+          className={`grid ${data?.permitted ? "grid-rows-30" : "grid-rows-20"} h-[80vh] w-5/6 font-extrabold text-large text-center`}
         >
-          {homeRooms.length === 0 ? (
-            <SelectItem key={"empty"}>No Homerooms</SelectItem>
-          ) : (
-            homeRooms.map((room) => (
-              <SelectItem key={room.homeRoom}>{room.homeRoom}</SelectItem>
-            ))
-          )}
-        </Select>
+          <ParkingRows data={spaces} cols={data?.permitted ? 10 : 15} />
+        </div>
+        {!data?.permitted && (
+          <Select
+            label="Filter Homeroom"
+            placeholder="Select Homeroom(s)"
+            className="max-w-xs px-4 pt-4"
+            variant="bordered"
+            selectionMode="multiple"
+            onSelectionChange={updateUrl}
+          >
+            {homeRooms.length === 0 ? (
+              <SelectItem key={"empty"}>No Homerooms</SelectItem>
+            ) : (
+              homeRooms.map((room) => (
+                <SelectItem key={room.homeRoom}>{room.homeRoom}</SelectItem>
+              ))
+            )}
+          </Select>
+        )}
       </div>
     </Page>
   );
 }
 
-function ParkingRows({ data }: { data: Space[] }) {
+function ParkingRows({ data, cols }: { cols: number; data: Space[] }) {
   const newData = [];
-  for (let i = 0; i < 300; i += 15) {
-    newData.push(data.slice(i, i + 15));
+  for (let i = 0; i < 300; i += cols) {
+    newData.push(data.slice(i, i + cols));
   }
-  return newData.map((it, index) => <ParkingRow key={index} data={it} />);
+  return newData.map((it, index) => (
+    <ParkingRow key={index} data={it} cols={cols} />
+  ));
 }
 
-function ParkingRow({ data }: { data: Space[] }) {
+function ParkingRow({ data, cols }: { cols: number; data: Space[] }) {
+  const column =
+    cols === 10
+      ? "grid-cols-10"
+      : cols === 15
+        ? "grid-cols-15"
+        : "auto-grid-auto";
   return (
-    <div className="grid grid-cols-15">
+    <div className={`grid ${column}`}>
       {data.map((it) => (
         <ParkingTile key={it.id} space={it} />
       ))}
