@@ -39,7 +39,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   };
 
   return {
-    spaces: await prisma.space.findMany(),
+    spaces: await prisma.space.findMany({ orderBy: { spaceNumber: "asc" } }),
     homeRooms: await prisma.teacher.findMany(),
     recentCars: await prisma.teacher.findMany({
       where: { ...roomFilter() }
@@ -234,7 +234,5 @@ function tileColor(status: Status, timeout?: boolean) {
         : "bg-[#E9D500] text-[#193B4B] rounded-small flex items-center justify-center";
     case "EMPTY":
       return "bg-[#193B4B] text-white";
-    case "TIMEOUT":
-      return "bg-green-200 text-black";
   }
 }
