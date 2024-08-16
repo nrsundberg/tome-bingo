@@ -31,7 +31,6 @@ RUN pnpm install --frozen-lockfile --prod=false
 # Generate Prisma Client
 COPY --link prisma .
 RUN npx prisma generate
-RUN npx prisma db push
 
 # Copy application code
 COPY --link . .
