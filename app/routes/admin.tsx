@@ -4,13 +4,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction
 } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  Outlet,
-  useFetcher,
-  useLoaderData
-} from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import {
   Autocomplete,
   AutocompleteItem,
@@ -37,7 +31,8 @@ import { MinimalCsvFileChooser } from "~/components/FileChooser";
 export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     user: await protectToAdminAndGetPermissions(request),
-    data: await prisma.student.findMany()
+    student: await prisma.student.findMany(),
+    homeRoom: await prisma.teacher.findMany()
   });
 }
 
@@ -84,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function () {
-  const { user, data } = useLoaderData<typeof loader>();
+  const { user, student, homeRoom } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
   const deleteFetcher = useFetcher({ key: "delete" });
   const [value, setValue] = useState("");
@@ -127,7 +122,7 @@ export default function () {
           </div>
         </Form>
         <div className="flex gap-2 justify-center">
-          <Link to="/create/teacher">
+          <Link to="/create/homeroom">
             <Button color="primary" name="action">
               Add Homeroom
             </Button>
@@ -147,7 +142,7 @@ export default function () {
         </div>
         <div className="flex gap-2 py-4 justify-center">
           <Autocomplete
-            defaultItems={data}
+            defaultItems={student}
             label="Search student by Space Num"
             className="max-w-xs"
             onInputChange={onInputChange}
@@ -167,6 +162,31 @@ export default function () {
               name="action"
             >
               Edit Student
+            </Button>
+          </Link>
+        </div>
+        <div className="flex gap-2 py-4 justify-center">
+          <Autocomplete
+            defaultItems={homeRoom}
+            label="Search student by Space Num"
+            className="max-w-xs"
+            onInputChange={onInputChange}
+          >
+            {(homeRoom) => (
+              <AutocompleteItem key={homeRoom.id}>
+                {`${homeRoom.homeRoom}`}
+              </AutocompleteItem>
+            )}
+          </Autocomplete>
+          <Link to={`/edit/homeroom/${value}`}>
+            <Button
+              color="warning"
+              type="submit"
+              className="max-w-xs"
+              value="create"
+              name="action"
+            >
+              Edit Homeroom
             </Button>
           </Link>
         </div>
@@ -193,7 +213,7 @@ export default function () {
             color="danger"
             onClick={deleteStudents}
             isLoading={deleteFetcher.state !== "idle"}
-            isDisabled={fetcher.state !== "idle" || data.length === 0}
+            isDisabled={fetcher.state !== "idle" || student.length === 0}
           >
             Delete All Student Records
           </Button>
@@ -206,7 +226,7 @@ export default function () {
                 <TableColumn key={column.key}>{column.label}</TableColumn>
               )}
             </TableHeader>
-            <TableBody items={data}>
+            <TableBody items={student}>
               {(item) => (
                 <TableRow key={item.id}>
                   {(columnKey) => (
