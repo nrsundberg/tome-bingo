@@ -1,17 +1,15 @@
 services:
-  mysql-db:
-    image: mysql:latest
+  db:
+    image: postgres:latest
     environment:
-      MYSQL_ROOT_PASSWORD: tome
-      MYSQL_DATABASE: tome
-      MYSQL_USER: tome
-      MYSQL_PASSWORD: tome
+      POSTGRES_ROOT_PASSWORD: tome
+      POSTGRES_DATABASE: tome
+      POSTGRES_USER: tome
+      POSTGRES_PASSWORD: tome
     volumes:
-      - mysql-data:/var/lib/mysql
+      - db-data:/var/lib/mysql
     ports:
-      - "3306:3306"
-    expose:
-      - 3306
+      - "5432:5432"
 
 volumes: 
-  mysql-data:
+  db-data:
