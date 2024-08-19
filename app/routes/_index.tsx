@@ -12,6 +12,7 @@ import { Space, Status } from "@prisma/client";
 import { loader as rootLoader } from "~/root";
 import {
   Button,
+  Divider,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -41,8 +42,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     spaces: await prisma.space.findMany({ orderBy: { spaceNumber: "asc" } }),
     homeRooms: await prisma.teacher.findMany(),
-    recentCars: await prisma.teacher.findMany({
-      where: { ...roomFilter() }
+
+    recentCars: await prisma.student.findMany({
+      where: {
+        homeRoom: { in: filterRooms?.split(",") },
+        space: { status: Status.ACTIVE }
+      }
     })
   };
 }
@@ -70,7 +75,6 @@ export default function () {
   const [searchParams, setSearchParams] = useSearchParams();
   const { spaces, homeRooms, recentCars } = useLoaderData<typeof loader>();
   const data = useRouteLoaderData<typeof rootLoader>("root");
-
   useRevalidateOnInterval({
     enabled: true,
     interval: 3 * 1001
@@ -93,22 +97,47 @@ export default function () {
           <ParkingRows data={spaces} cols={data?.permitted ? 10 : 15} />
         </div>
         {!data?.permitted && (
-          <Select
-            label="Filter Homeroom"
-            placeholder="Select Homeroom(s)"
-            className="max-w-xs px-4 pt-4"
-            variant="bordered"
-            selectionMode="multiple"
-            onSelectionChange={updateUrl}
-          >
-            {homeRooms.length === 0 ? (
-              <SelectItem key={"empty"}>No Homerooms</SelectItem>
-            ) : (
-              homeRooms.map((room) => (
-                <SelectItem key={room.homeRoom}>{room.homeRoom}</SelectItem>
-              ))
-            )}
-          </Select>
+          <div className="grid-rows-40 gap-3 py-2 text-center h-[80vh]">
+            <Select
+              label="Filter Homeroom"
+              placeholder="Select Homeroom(s)"
+              className="max-w-xs px-4 pt-4"
+              variant="bordered"
+              selectionMode="multiple"
+              onSelectionChange={updateUrl}
+            >
+              {homeRooms.length === 0 ? (
+                <SelectItem key={"empty"}>No Homerooms</SelectItem>
+              ) : (
+                homeRooms.map((room) => (
+                  <SelectItem key={room.homeRoom}>{room.homeRoom}</SelectItem>
+                ))
+              )}
+            </Select>
+            <div className="py-3">
+              Most Recent Queue
+              <Divider className={"my-3"} />
+              <div>
+                {recentCars.map(
+                  (student: {
+                    id: string | number;
+                    spaceNumber: number | null;
+                    homeRoom: string | null;
+                    firstName: string;
+                    lastName: string;
+                  }) => (
+                    <div>
+                      {student.firstName +
+                        " " +
+                        student.lastName +
+                        " - " +
+                        student.homeRoom}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </Page>
