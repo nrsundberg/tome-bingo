@@ -47,7 +47,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
       where: {
         homeRoom: { in: filterRooms?.split(",") },
         space: { status: Status.ACTIVE }
-      }
+      },
+      orderBy: {
+        space: {
+          timestamp: "desc"
+        }
+      },
+      take: 20
     })
   };
 }
