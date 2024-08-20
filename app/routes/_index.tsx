@@ -94,6 +94,9 @@ export default function () {
       return prev;
     });
   };
+
+  const defaultFilter = searchParams!.get("room")?.split(",");
+
   return (
     <Page>
       <div className="flex justify-center">
@@ -106,6 +109,7 @@ export default function () {
           <div className="grid-rows-40 gap-3 py-2 text-center h-[80vh]">
             <Select
               label="Filter Homeroom"
+              defaultSelectedKeys={defaultFilter}
               placeholder="Select Homeroom(s)"
               className="max-w-xs px-4 pt-4"
               variant="bordered"
@@ -125,14 +129,17 @@ export default function () {
               <Divider className={"my-3"} />
               <div>
                 {recentCars.map(
-                  (student: {
-                    id: string | number;
-                    spaceNumber: number | null;
-                    homeRoom: string | null;
-                    firstName: string;
-                    lastName: string;
-                  }) => (
-                    <div>
+                  (
+                    student: {
+                      id: string | number;
+                      spaceNumber: number | null;
+                      homeRoom: string | null;
+                      firstName: string;
+                      lastName: string;
+                    },
+                    index
+                  ) => (
+                    <div key={index}>
                       {student.firstName +
                         " " +
                         student.lastName +
