@@ -184,6 +184,7 @@ function ParkingRow({ data, cols }: { cols: number; data: Space[] }) {
 }
 
 function ParkingTile({ space }: { space: Space }) {
+  const revalidator = useRevalidator();
   const { timestamp, status, spaceNumber } = space;
   const data = useRouteLoaderData<typeof rootLoader>("root");
   const [newStatus, setNewStatus] = useState(status);
@@ -221,7 +222,6 @@ function ParkingTile({ space }: { space: Space }) {
 
   // 30 second timeout
   const timeoutInterval = 30000;
-
   const timeout = () => {
     if (timestamp) {
       return (
@@ -233,6 +233,12 @@ function ParkingTile({ space }: { space: Space }) {
       return false;
     }
   };
+
+  useEffect(() => {
+    if (revalidator.state === "idle") {
+      setColor(tileColor(newStatus, timeout()));
+    }
+  }, [revalidator.state]);
 
   const [color, setColor] = useState(tileColor(newStatus, timeout()));
 
