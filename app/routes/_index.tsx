@@ -177,7 +177,7 @@ function ParkingRow({ data, cols }: { cols: number; data: Space[] }) {
   return (
     <div className={`grid ${column}`}>
       {data.map((it) => (
-        <ParkingTile key={it.id} space={it} />
+        <ParkingTile key={`${it.id}-${it.status}`} space={it} />
       ))}
     </div>
   );
