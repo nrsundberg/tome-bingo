@@ -101,7 +101,7 @@ export default function () {
     <Page>
       <div className="flex justify-center">
         <div
-          className={`grid ${data?.permitted ? "grid-rows-30" : "grid-rows-20"} h-[80vh] w-5/6 font-extrabold text-large text-center`}
+          className={`grid ${data?.permitted ? "grid-rows-30" : "grid-rows-20"} h-[90vh] w-5/6 font-extrabold text-large text-center`}
         >
           <ParkingRows data={spaces} cols={data?.permitted ? 10 : 15} />
         </div>
