@@ -41,7 +41,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return {
     spaces: await prisma.space.findMany({ orderBy: { spaceNumber: "asc" } }),
-    homeRooms: await prisma.teacher.findMany(),
+    homeRooms: await prisma.teacher.findMany({ orderBy: { homeRoom: "asc" } }),
 
     recentCars: await prisma.student.findMany({
       where: {
