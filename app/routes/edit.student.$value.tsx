@@ -4,7 +4,7 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
-import { redirectWithSuccess } from "remix-toast";
+import { redirectWithInfo, redirectWithSuccess } from "remix-toast";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(params.value, "is bad");
@@ -22,12 +22,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
+  const action = formData.get("action");
+  const id = formData.get("id") as string;
+
+  if (action) {
+    if ((action as string) === "delete") {
+      await prisma.student.delete({ where: { id: parseInt(id) } });
+      return redirectWithInfo("/admin", "Deleted student");
+    }
+  }
+
   // Extract individual fields from formData
   const firstName = formData.get("firstName") as string;
   const lastName = formData.get("lastName") as string;
   const spaceNumber = parseInt(formData.get("spaceNumber") as string);
   const homeRoom = formData.get("homeRoom") as string;
-  const id = formData.get("id") as string;
   let student = await prisma.student.update({
     where: {
       id: parseInt(id)
@@ -85,9 +94,12 @@ export default function EditStudent() {
         />
         <Input name="id" label="Student ID" value={data.student.id} />
       </div>
-      <div>
+      <div className="justify-between flex w-full">
         <Button type="submit" color="primary">
           Edit Student
+        </Button>
+        <Button color="danger" type="submit" name="action" value="delete">
+          Delete Student
         </Button>
       </div>
     </fetcher.Form>
